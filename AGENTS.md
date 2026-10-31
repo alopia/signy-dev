@@ -21,6 +21,6 @@ Instructions for any AI tool or agent working on `signy-dev`, the Signy dev tool
 
 - `src/`: the package source. `npm run build` writes `dist/`.
 - `test/`: Vitest tests in jsdom. Any `console.error` or `console.warn` a test does not claim with `expectLogged()` fails it.
-- Signy comes from the checkout in `../signy` (a `file:` dev dependency) until it is on npm. Build it there first with `npm run build`. Do not edit it from here, a framework change belongs in `alopia/signy`.
+- Signy comes from npm (`signy` in `devDependencies`). The log message test also reads the ids from Signy's source in `../signy` (or `SIGNY_DIR`), and skips when there is none. CI checks out the tag of the installed version. Do not edit the framework from here, a framework change belongs in `alopia/signy`.
 
 Keep `npm run check` passing: ESLint, Prettier, typecheck, tests and the build.

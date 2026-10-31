@@ -1,10 +1,13 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { getLogMessage, logger } from 'signy';
 import { LOG_MESSAGES } from '../src';
 import { expectLogged, ignoreLogged } from './support/console';
 
+// The ids are only in Signy's source, the npm package types them as string.
+// CI checks out the tag of the installed version, see .github/workflows/ci.yml.
 const SIGNY_SRC = join(process.env['SIGNY_DIR'] ?? resolve('../signy'), 'src');
+const HAS_SIGNY_SRC = existsSync(SIGNY_SRC);
 
 /** Every message id Signy defines, read from its `log-messages.ts` files. */
 function signyMessageIds(): string[] {
@@ -40,13 +43,13 @@ describe('log messages', () => {
     }
   });
 
-  it('has a text for every id Signy defines', () => {
+  it.skipIf(!HAS_SIGNY_SRC)('has a text for every id Signy defines', () => {
     const ids = signyMessageIds();
     expect(ids.length).toBeGreaterThan(30);
     expect(ids.filter((id) => !LOG_MESSAGES[id])).toEqual([]);
   });
 
-  it('has no text for an id Signy dropped', () => {
+  it.skipIf(!HAS_SIGNY_SRC)('has no text for an id Signy dropped', () => {
     const ids = new Set(signyMessageIds());
     expect(Object.keys(LOG_MESSAGES).filter((id) => !ids.has(id))).toEqual([]);
   });

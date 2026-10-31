@@ -12,18 +12,24 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: signy-dev
-      # Not on npm yet, package.json takes signy from ../signy
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          repository: alopia/signy
-          path: signy
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: signy-dev/.tool-versions
-      - run: npm ci && npm run build
-        working-directory: signy
+          cache: npm
+          cache-dependency-path: signy-dev/package-lock.json
+      # signy comes from npm
       - run: npm ci
         working-directory: signy-dev
+      # The log message test reads the ids from Signy's source, at the tag of
+      # the installed version. Nothing is built from it.
+      - id: signy
+        run: echo "version=$(node -p "require('./node_modules/signy/package.json').version")" >> "$GITHUB_OUTPUT"
+        working-directory: signy-dev
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: alopia/signy
+          ref: ${{ steps.signy.outputs.version }}
+          path: signy
       # ESLint, Prettier, typecheck, tests and the build
       - run: npm run check
         working-directory: signy-dev

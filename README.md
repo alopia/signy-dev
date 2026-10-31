@@ -82,9 +82,9 @@ if (import.meta.env.DEV) {
 
 ## Development
 
-Signy comes from the checkout in `../signy`. Build it there first, then:
-
 ```bash
 npm install
 npm run check
 ```
+
+Signy comes from npm. The test that every Signy log id has a text reads the ids from Signy's source, so check out `alopia/signy` next to this repo in `../signy`, or set `SIGNY_DIR`. Without it that test is skipped.
